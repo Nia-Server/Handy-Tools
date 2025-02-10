@@ -48,5 +48,15 @@ def merge_images(images, output_path):
 
 # 示例调用
 blended_images = blend_images("image1.png", "image2.png", "output/blended", steps=10)
-merge_images(blended_images, "output/merged_forward.png")
-merge_images(blended_images[::-1], "output/merged_reverse.png")
+
+# 构造合并顺序：图1 -> 渐变到图2 -> 图2 -> 渐变回图1（不重复端点）
+if len(blended_images) >= 2:
+    merged_list = [
+        blended_images[0],  # 原始图1
+        *blended_images[1:-1],  # 正向渐变（不包含图2）
+        blended_images[-1],  # 原始图2
+        *blended_images[-2:0:-1]  # 反向渐变（不包含图1）
+    ]
+    merge_images(merged_list, "./merged_final.png")
+else:
+    print("至少需要两个混合步骤才能生成完整渐变效果")
